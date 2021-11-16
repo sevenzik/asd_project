@@ -1,0 +1,480 @@
+swagger: "2.0"
+info:
+  description: ""
+  version: "1.0.0"
+  title: "Windows API"
+  # termsOfService: "http://swagger.io/terms/"
+  # contact:
+  #   email: "sevenzik@gmail.com"
+  # license:
+  #   name: "Apache 2.0"
+  #   url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "fake.com"
+basePath: "/v2"
+schemes:
+- "https"
+- "http"
+paths:
+  /cart:
+    get:
+      tags:
+      - "cart"
+      summary: "Get cart of current user"
+      description: ""
+      operationId: "getCart"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+         description: ""
+         schema:
+          $ref: "#/definitions/Cart"
+          
+    post:
+      tags:
+      - "cart"
+      summary: "Add window to order"
+      description: ""
+      operationId: "addToCart"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        required: true
+        schema:
+          $ref: "#/definitions/Window"
+      responses:
+        "201":
+          description: "OK"
+        "405":
+          description: "Invalid input"
+      
+      
+  # /cart/order:
+  #   post:
+  #     tags:
+  #     - "cart"
+  #     summary: "Make order from current cart"
+  #     description: ""
+  #     operationId: "makeOrder"
+  #     consumes:
+  #     - "application/json"
+  #     parameters:
+  #     - in: "body"
+  #       name: "body"
+  #       required: true
+  #       schema:
+  #         $ref: "#/definitions/Cart"
+  #     responses:
+  #       "201":
+  #         description: "OK"
+  #         schema:
+  #           $ref: "#/definitions/Order"
+  #       "405":
+  #         description: "Invalid input"
+    
+  /cart/delete/{cartPositionId}:
+    post:
+      tags:
+      - "cart"
+      summary: "Delete cart position by ID"
+      description: ""
+      operationId: "deleteFromCart"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "cartPositionId"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "OK"
+        "400":
+          description: "Invalid ID supplied"
+      
+  /cart/clear:
+    post:
+      tags:
+      - "cart"
+      summary: "Clear cart"
+      operationId: "clearCart"
+     
+      responses:
+        "200":
+          description: "OK"
+          
+  /orders:
+    get:
+      tags:
+      - "orders"
+      summary: "Get ids list of all user orders"
+      description: ""
+      operationId: "getAllOrders"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "OK"
+        "405":
+          description: "Invalid input"
+      security:
+      - windowstore_auth:
+        - "read:orders"
+    post:
+      tags:
+      - "orders"
+      summary: "Create order"
+      description: ""
+      operationId: "createOrder"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/Cart"
+      responses:
+        "201":
+          description: "OK"
+        "400":
+          description: "Invalid parameteres"
+      security:
+      - windowstore_auth:
+        - "read:orders"
+  /orders/{id}:
+    get:
+      tags:
+      - "orders"
+      summary: "Get info about particular order"
+      description: ""
+      operationId: "getOrder"
+      produces:
+      - "application/xml"
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: "string"
+        required: true
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Order not found"
+        "405":
+          description: "Validation exception"
+      security:
+      - windowstore_auth:
+        - "read:orders"        
+    put:
+      tags:
+      - "orders"
+      summary: "Edit info about order (example asign worker to order)"
+      description: ""
+      operationId: "editOrder"  
+      produces:
+      - "application/json"
+      parameters:
+      - in: "path"
+        name: "id"
+        type: "integer"
+        required: true
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/Order"
+        required: true
+      responses:
+        "400":
+          description: "Invalid ID supplied"
+        "404":
+          description: "Order not found"
+        "405":
+          description: "Validation exception"
+      security:
+      - windowstore_auth:
+        - "write:orders"   
+        
+  /register:
+    post:
+      tags:
+      - "Authorization"
+      summary: "Register new user"
+      description: ""
+      operationId: "register"  
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/Credentianals"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+        "405":
+          description: "Invalid input"
+          
+  /login:
+    post:
+      tags:
+      - "Authorization"
+      summary: "Login"
+      description: ""
+      operationId: "login"  
+      consumes:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        schema:
+          $ref: "#/definitions/Credentianals"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+        "405":
+          description: "Invalid input"
+          
+          
+  /user:
+    get:
+      tags:
+      - "Users"
+      summary: "Get all users"
+      description: ""
+      operationId: "getAllUsers"
+      produces:
+      - "application/json"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/ApiResponse"
+        "405":
+          description: "Invalid input"
+      security:
+      - windowstore_auth:
+        - "read:users"
+
+
+  /user/{userID}:
+    get:
+      tags:
+      - "Users"
+      summary: "Get user"
+      description: ""
+      operationId: "getUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userID"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/User"
+        "405":
+          description: "Invalid input"
+      security:
+      - windowstore_auth:
+        - "read:users"
+    put:
+      tags:
+      - "Users"
+      summary: "Edit user"
+      description: ""
+      operationId: "editUser"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "userID"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      - name: "body"
+        in: "body"
+        schema:
+            $ref: "#/definitions/User"
+      responses:
+        "200":
+          description: "OK"
+          schema:
+            $ref: "#/definitions/User"
+        "405":
+          description: "Invalid input"
+      security:
+      - windowstore_auth:
+        - "write:users"
+
+  /payment/{paymentID}:
+    get:
+      tags:
+      - "Payment"
+      summary: "Get payment"
+      description: ""
+      operationId: "getPayment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "paymentID"
+        in: "path"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        "200":
+          description: "OK"
+        "405":
+          description: "Invalid input"
+      security:
+      - windowstore_auth:
+        - "read:payment"
+        
+  /payment:
+    post:
+      tags:
+      - "Payment"
+      summary: "Get payment"
+      description: ""
+      operationId: "makePayment"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "body"
+        in: "body"
+        required: true
+        schema:
+            $ref: "#/definitions/CardInfo"
+      responses:
+        "200":
+          description: "OK"
+        "405":
+          description: "Invalid input"
+
+
+securityDefinitions:
+  windowstore_auth:
+    type: "oauth2"
+    authorizationUrl: "http://fake.com"
+    flow: "implicit"
+    scopes:
+      write:orders: "modify orders in your account"
+      write:users: "modify your account"
+      read:orders: "read orders"
+      read:users: "read users"
+      read:payment: "read payments"
+    
+definitions:
+  CardInfo:
+    type: "object"
+    properties:
+      num:
+        type: "string"
+      cvv:
+        type: "string"
+      exp:
+        type: "string"
+  Credentianals:
+    type: "object"
+    properties:
+      login:
+        type: "string"
+      password:
+        type: "string"
+     
+    xml:
+      name: "Credentianals"
+  User:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      username:
+        type: "string"
+      firstName:
+        type: "string"
+      lastName:
+        type: "string"
+      email:
+        type: "string"
+      password:
+        type: "string"
+      phone:
+        type: "string"
+      userStatus:
+        type: "integer"
+        format: "int32"
+        description: "User Status"
+    xml:
+      name: "User"
+  Order:
+    type: "object"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      userId:
+        type: "integer"
+        format: "int64"
+      workerId:
+        type: "integer"
+        format: "int64"
+      windows:
+        type: "array"
+        items:
+          $ref: "#/definitions/Window"
+    xml:
+      name: "Order"
+  Cart:
+    type: "object"
+    properties:
+      windows:
+        type: "array"
+        items:
+          $ref: "#/definitions/Window"
+    xml:
+      name: "Cart"
+  Window:
+    type: "object"
+    required:
+    - "height"
+    - "width"
+    - "type"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+      height:
+        type: "integer"
+        example: "15"
+      width:
+        type: "integer"
+        example: "25"
+      type:
+        type: "string"
+        enum:
+        - "plastic"
+    xml:
+      name: "Window"
+  ApiResponse:
+    type: "object"
+    properties:
+      code:
+        type: "integer"
+        format: "int32"
+      type:
+        type: "string"
+      message:
+        type: "string"
